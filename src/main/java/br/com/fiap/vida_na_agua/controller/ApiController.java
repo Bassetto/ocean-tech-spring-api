@@ -24,11 +24,6 @@ public class ApiController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public String teste() {
-        return "salve";
-    }
-
     @GetMapping(value = "/reports/list")
     public List<Report> listReports() {
         return this.reportService.getAll();
