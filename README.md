@@ -1,6 +1,6 @@
-# Infinitum APP
+# Ocean Tech API
 
-Projeto de consulta de municípios para o TCE SP
+Api para o projeto de consulta da condição das praias brasileiras
 
 ## Integrantes
 
