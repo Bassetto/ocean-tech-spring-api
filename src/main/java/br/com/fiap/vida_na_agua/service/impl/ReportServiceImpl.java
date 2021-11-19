@@ -18,22 +18,42 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<Report> getAll() {
-        return this.reportsRepository.findAll();
+        try {
+            return this.reportsRepository.findAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Optional<List<Report>> listByName(String name) {
-        return this.reportsRepository.findByName(name);
+        try {
+            return this.reportsRepository.findByName(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<List<Report>> listByStateAndYear(String state, int year) {
-        return this.reportsRepository.findByStateAndYear(state, year);
+        try {
+            return this.reportsRepository.findByStateAndYear(state, year);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Report> getById(ObjectId id) {
-        return this.reportsRepository.findById(id);
+        try {
+            return this.reportsRepository.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -53,17 +73,27 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public Optional<Report> update(ObjectId id, Report report) {
-        Optional<Report> resultadoResponse = this.reportsRepository.findById(id);
-        if (resultadoResponse.isEmpty()) {
+        try {
+            Optional<Report> resultadoResponse = this.reportsRepository.findById(id);
+            if (resultadoResponse.isEmpty()) {
+                return Optional.empty();
+            }
+            assert !report.getName().isEmpty();
+            report.set_id(id);
+            return Optional.of(this.reportsRepository.save(reportPreSave(report)));
+        } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
-        report.set_id(id);
-        return Optional.of(this.reportsRepository.save(reportPreSave(report)));
     }
 
     @Override
     public void delete(ObjectId id) {
-        this.reportsRepository.deleteById(id);
+        try {
+            this.reportsRepository.deleteById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private Report reportPreSave(Report report) {

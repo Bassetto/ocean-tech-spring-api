@@ -1,7 +1,9 @@
 package br.com.fiap.vida_na_agua.controller;
 
+import br.com.fiap.vida_na_agua.model.Mapping;
 import br.com.fiap.vida_na_agua.model.Report;
 import br.com.fiap.vida_na_agua.model.User;
+import br.com.fiap.vida_na_agua.service.MappingService;
 import br.com.fiap.vida_na_agua.service.ReportService;
 import br.com.fiap.vida_na_agua.service.UserService;
 import org.bson.types.ObjectId;
@@ -23,6 +25,29 @@ public class ApiController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MappingService mappingService;
+
+    @GetMapping(value = "/mapping/list")
+    public List<Mapping> listMapping() {
+        return this.mappingService.list();
+    }
+
+    @PostMapping(value = "/mapping/create")
+    public ResponseEntity<Mapping> createMapping(@RequestBody Mapping mapping) {
+        Optional<Mapping> resultadoResponse = this.mappingService.create(mapping);
+        if (resultadoResponse.isEmpty()) {
+            return new ResponseEntity<Mapping>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<Mapping>(resultadoResponse.get(), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/mapping/delete/{name}")
+    public ResponseEntity<String> createMapping(@PathVariable String name) {
+        this.mappingService.delete(name);
+        return new ResponseEntity<String>("Foi", HttpStatus.OK);
+    }
 
     @GetMapping(value = "/reports/list")
     public List<Report> listReports() {

@@ -18,53 +18,92 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> listAll() {
-        return this.userRepository.findAll();
+        try {
+            return this.userRepository.findAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Optional<User> getById(ObjectId id) {
-        return this.userRepository.findById(id);
+        try {
+            return this.userRepository.findById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<User> getByUsername(String username) {
-        return this.userRepository.findByUsername(username);
+        try {
+            return this.userRepository.findByUsername(username);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<User> register(User user) {
-        if (this.userRepository.findByUsername(user.getUsername().toLowerCase()).isEmpty()) {
-            user.set_id(ObjectId.get());
-            user.setUsername(user.getUsername().toLowerCase());
-            return Optional.of(this.userRepository.save(user));
+        try {
+            if (this.userRepository.findByUsername(user.getUsername().toLowerCase()).isEmpty()) {
+                user.set_id(ObjectId.get());
+                user.setUsername(user.getUsername().toLowerCase());
+                User userReturn = this.userRepository.save(user);
+                userReturn.setPassword("");
+                return Optional.of(userReturn);
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     @Override
     public Optional<User> login(User user) {
-        Optional<User> userSaved = this.userRepository.findByUsername(user.getUsername().toLowerCase());
-        if (userSaved.isEmpty()) {
+        try {
+            Optional<User> userSaved = this.userRepository.findByUsername(user.getUsername().toLowerCase());
+            if (userSaved.isEmpty()) {
+                return Optional.empty();
+            }
+            User userReturn = userSaved.get();
+            if (userReturn.getPassword().equals(user.getPassword())) {
+                userReturn.setPassword("");
+                return Optional.of(userReturn);
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
-        if (userSaved.get().getPassword().equals(user.getPassword())) {
-            return userSaved;
-        }
-        return Optional.empty();
     }
 
     @Override
     public Optional<User> update(ObjectId id, User user) {
-        Optional<User> userSaved = this.userRepository.findById(id);
-        if (userSaved.isEmpty()) {
+        try {
+            Optional<User> userSaved = this.userRepository.findById(id);
+            if (userSaved.isEmpty()) {
+                return Optional.empty();
+            }
+            user.set_id(new ObjectId(userSaved.get().get_id()));
+            return Optional.of(this.userRepository.save(user));
+        } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
-        user.set_id(new ObjectId(userSaved.get().get_id()));
-        return Optional.of(this.userRepository.save(user));
     }
 
     @Override
     public void delete(ObjectId id) {
-        this.userRepository.deleteById(id);
+        try {
+            this.userRepository.deleteById(id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
